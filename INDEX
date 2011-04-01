@@ -1,0 +1,13 @@
+getConfs	  A function to generate configurations of a graph.
+getEdges      A function to get edges of a 1D, 2D, or 3D graph.           
+getWeights    A function to get weights of a 1D, 2D, or 3D graph.           
+getNeighbors  A function to get neighbors of a 1D, 2D, or 3D graph.         
+getBlocks     A function to get blocks of a 1D, 2D, or 3D graph.           
+getPatches    A function using Rem's algorithm to get pathes of a graph.
+rMultinom     A function to generate random samples from different multinomial distributions with the same number of classes.
+SW            A function to generate random samples from a compound Potts model by Swedsen-Wang's algorithem.
+Wolff         A function to generate random samples from a compound Potts model by Wolff's algorithem. 
+BlocksGibbs   A function to generate random samples from a Potts model by Gibbs Sampling that takes advantage of conditional independence.
+rPotts1       A function to generate one random sample from a Potts model by Gibbs Sampling that takes advantage of conditional independence
+              or by the partial decoupling method.
+getNC         A function to calculate the normalizing contant of a simple Potts model.
