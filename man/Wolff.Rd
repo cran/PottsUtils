@@ -9,21 +9,21 @@
 }
 \arguments{
   \item{n}{number of samples.}
-  \item{nvertex}{number of vertices in a graph.}
+  \item{nvertex}{number of vertices of a graph.}
   \item{ncolor}{number of colors each vertex can take.}
-  \item{neighbors}{neighbors in a graph.}
+  \item{neighbors}{neighbors of a graph.}
   \item{weights}{weights between neighbors. One for each corresponding
-	neighbor in	\code{neighbors}. The default values are 1s for all.}
+	component in \code{neighbors}. The default values are 1s for all.}
   \item{beta}{the parameter inverse temperature of the Potts model.}
 }
 \value{
-  A \code{nvertex}*\code{n} matrix with the kth column being the kth
+  A \code{nvertex} by \code{n} matrix with the kth column being the kth
   sample. 
 }
 \details{
   We use the Wolff algorithm to generate random samples from a compound
   Potts model. See \code{\link[PottsUtils]{rPotts1}} for more
-  information on the simple Potts model.
+  information on the compound Potts model.
 }
 \references{
  Ulli Wolff (1989)
@@ -42,8 +42,8 @@
   #Example 1: Generate 100 samples from a Potts model with the
   #           neighborhood structure corresponding to a
   #           second-order Markov random field defined on a 
-  #           \eqn{3 \times 3} 2D graph. The number of colors is 2.
-  #           \eqn{\beta}=0.7. All weights are equal to 1.
+  #           3*3 2D graph. The number of colors is 2.
+  #           beta=0.7. All weights are equal to 1.
 
   neighbors <- getNeighbors(mask=matrix(1, 3, 3), neiStruc=rep(2,4))
   Wolff(n=100, nvertex=9, ncolor=2, neighbors, beta=0.7)

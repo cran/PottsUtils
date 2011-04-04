@@ -19,8 +19,8 @@
   Suppose there are n vertices and each can take values from
   \eqn{1,2, \ldots, ncolor}.
   This function generates all possible configurations. 
-  For example, there are two vertices and each can be either 1 or 2.
-  Then the possible configurations are (1,1), (1,2), (2,1) and (2,2).
+  For example, if there are two vertices and each can be either 1 or 2,
+  then the possible configurations are (1,1), (1,2), (2,1) and (2,2).
 }
 \examples{
   #Example 1: There are two vertices and each is either of

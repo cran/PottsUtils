@@ -1,0 +1,546 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{latexsym,amsmath,amssymb,epsfig}
+\usepackage{amsthm}
+\usepackage{subfigure}
+\usepackage{marvosym}
+%\usepackage{hyperref}
+\usepackage{pstricks}
+\usepackage{pst-node}
+\usepackage[round]{natbib}
+\usepackage{hyperref}
+\usepackage{multirow}
+
+\newtheorem{definition}{Definition}[section]
+\graphicspath{{figures/}}
+
+\title{An Introduction to \texttt{PottsUtils}}
+\author{Dai Feng \\ daifeng.stat@gmail.com}
+\date{}
+\begin{document}
+%\VignetteIndexEntry{Using the PottsUtils Package}
+%\VignetteKeywords{Potts, Simulation of the Potts models}
+%\VignettePackage{PottsUtils}
+\maketitle
+
+%<<echo=false,results=hide>>=
+%library(PottsUtils)
+%@
+
+
+Package \texttt{PottsUtils} comprises several functions related to
+the Potts models defined on undirected graphs.
+The main purpose of the package is to make available
+several functions which generate samples from the models.
+To facilitate that, there are other utilities. 
+Furthermore, there is a by-product of simulation
+functions.  Altogether, there are three sets of functions.
+The first produces basic properties of a
+graph and generates samples from multinomial distributions
+to facilitate the simulation functions (they maybe used 
+for other purposes as well).  The second provides various simulation functions.
+The third currently includes only one function which computes the 
+normalizing constant based on simulation results.
+
+This introduction was intended to help users to understand better
+the functions, the documentation (Rd files), and the source code.
+For more technical details
+(mathematical proof among others), we refer users to references herein.
+
+Hereafter, first we introduce some basic concepts and definitions
+related to the Potts models. Second, algorithms used in
+simulation functions are presented in a concise way.
+Third, a function to obtain normalizing constant is introduced.  Forth,
+we discuss some computational issues.  Finally, some future work is
+outlined.
+
+
+\section{Notation and Terminology}
+In this section we introduce concepts and definitions involved in the
+discussions of the Potts models.  The notations used are similar
+to those given in \cite{Winkler:2003}.  Based on that,
+several related functions in the package are introduced.
+
+We consider the Potts model defined on a
+finite undirected graph.  A graph describes a set
+of connections between objects.  Each object is called a node or vertex.
+There are observations to characterize the properties of vertices.
+Let $\mathcal{V}$ be a finite set, the set of vertices;
+$\mathcal{V}=\{1,2,,\ldots,N\}$, where $N$ is
+the total number of vertices.  For every vertex $i \in \mathcal{V}$, let
+$z_{i}$ take values in a finite set of categories $\mathcal{Z} =
+\{1,2,\ldots,k\}$, where $k$ is the number of categories.
+In the package we use different colors to represent different
+categories and vertices from the same category are of the
+same color.
+The product ${\bf{Z}} = \mathcal{Z}^N$ is the space of configurations
+${\bf{z}}=(z_{i}; i \in \mathcal{V})$.
+A strictly positive probability measure $P$ on ${\bf{Z}}$ for every
+${\bf{z}} \in {\bf{Z}}$ is called a \textit{stochastic} or
+\textit{random field}.
+Note that $P$ has to be strictly positive on ${\bf{Z}}$ to satisfy the
+assumptions of the Hammersley-Clifford theorem; see \cite{Besag:1974}
+and \cite{Winkler:2003} for details.
+
+A collection $\partial = (\partial(v): v \in \mathcal{V})$ of subsets of $\mathcal{V}$ is
+called a \textit{neighborhood system}, if (i) $i \notin \partial(i)$
+and (ii) $i \in \partial(j)$ if and only if $j \in \partial(i)$. The
+sites $j \in \partial(i)$ are called \textit{neighbors} of $i$.
+We use $i \sim j$ to denote
+that $i$ and $j$ are neighbors of each other.
+There is an \textit{edge} between $i$ and $j$ if and only if they are
+neighbors.
+Define a \textit{graph} $\mathcal{G}=\{\mathcal{V}, \mathcal{E}\}$, where $\mathcal{E}$ is the set of edges.  For a \textit{finite undirected graph},
+the number of vertices are finite and edge $(i, j)$ is equivalent to
+edge $(j, i)$.  The function \texttt{getEdges()} can be used to get edges of
+a graph.
+When neighbors $i$ and $j$ are from the same category (of the same color), 
+then there is a \textit{bond} between them.
+
+
+The random field $P$ is a \textit{Markov random field} (MRF) w.r.t. the
+neighborhood system $\partial$ if for all ${\bf{z}} \in {\bf{Z}}$,
+\[
+P(z_{i}|z_{j}, j \neq i) = P(z_{i}|z_{j}, j \in \partial(i))
+\]
+Probability measures of the form
+\[
+ P({\bf z})=\frac{\exp\{-H({\bf z})\}}{\sum_{{\bf x} \in {\bf{Z}}} \exp\{-H({\bf x})\}}
+\]
+are called \textit{Gibbs fields (or measures)}. $H$ is called the
+\textit{energy function} or \textit{Hamiltonian}, and $\sum_{x \in
+  {\bf{Z}}} \exp\{-H(x)\}$ is called the \textit{partition function}
+or \textit{normalizing constant}.  For detailed account on
+MRF, Gibbs measures, and related issues, we refer to \cite{Winkler:2003}.
+
+When using Markov random field models, the first question is how to define
+neighbors
+of all vertices. For a 1D lattice, the simplest way to define neighbors is that
+every vertex (except those on the boundaries) has the two adjacent vertices as
+its neighbors, see Figure \ref{fig:neighbors1D} for illustration.
+Of course, a vertex could have more than two neighbors.
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.8]{neighbors1D.png}
+\caption{2 neighbors in 1D}
+\label{fig:neighbors1D}
+\end{center}
+\end{figure}
+
+For a 2D lattice, there are two common ways to define neighbors.
+One is that neighbors of
+a vertex comprise its available N, S, E, and W adjacencies.
+Another is that, besides those four,
+there are four diagonal adjacencies on its north-west, north-east,
+south-west, and south-east.  See Figure \ref{fig:neighbors2D}
+for illustrations.  Probability measures defined on the former are called
+the first-order Markov random fields and the latter the second-order
+Markov random fields.
+\begin{figure}
+\begin{center}
+\includegraphics[scale=0.8]{neighbors2D.png}
+\caption{Four and eight neighbors in 2D}
+\label{fig:neighbors2D}
+\end{center}
+\end{figure}
+
+For a 3D lattice, besides defining six neighbors
+in the $x$, $y$, and $z$ directions, one can add twelve diagonal neighbors in the
+$x-y$, $x-z$, and $y-z$ planes, and another eight on the 3D diagonals.
+This leads to a six neighbor structure, an eighteen neighbor
+structure, and a twenty-six neighbor structure.
+For illustration, see Figure \ref{fig:neighbors3D}.
+% where we use a right-handed coordinate system with the $z$ axis pointing up.
+
+\begin{figure}[htp]
+\centering
+     \subfigure[six neighbors]{
+         \includegraphics[width=0.4\textwidth, totalheight=0.25\textheight]{6neighbors.png}}
+     \hspace{0.2in}
+     \subfigure[eighteen neighbors]{
+         \includegraphics[width=0.4\textwidth, totalheight=0.25\textheight]{18neighbors.png}}
+     \hspace{0.2in}
+     \subfigure[twenty-six neighbors]{
+         \includegraphics[width=0.4\textwidth, totalheight=0.25\textheight]{26neighbors.png}}
+\caption{Illustration of neighbor structures in 3D}
+\label{fig:neighbors3D}
+\end{figure}
+
+The package provides a function called \texttt{getNeighbors()} to
+generate all neighbors of a graph.
+
+After defining neighbors, the second question is how to model
+the spatial relationship among neighbors.
+One choice is to use a model from the Potts model family, a set of
+MRF models with the Gibbs measure defined as follows.
+\begin{equation}
+	p({\bf z}) = C(\beta)^{-1}
+               \exp\left\{\sum_{i=1}^{N}\alpha_{i}(z_{i})+
+                  \beta \sum_{i \sim j}w_{ij}f(z_{i}, z_{j})\right\}
+\label{eqn:genPotts}
+\end{equation}
+where $C(\beta)$ is a normalizing constant and $i \sim j$ indicates
+neighboring vertices.  We need to define neighborhood structure
+and then assign relationships among neighboring vertices.
+The parameter $\beta$, called the \textit{inverse
+temperature}, determines the level of spatial homogeneity between
+neighboring vertices in the graph. A zero $\beta$ would imply
+that neighboring vertices are
+independent.  We use positive $\beta$ values.
+The $w_{ij}$ are \textit{weights} and we assume $w_{ij} > 0$.
+The term $\sum_{i=1}^{N}\alpha_{i}(z_{i})$ is called the
+\textit{external field}. The $\alpha_{i}(z_{i})$ are functions of $z_{i}$.
+When $\beta=0$, the external field completely characterizes the
+distribution of the independent $z_i, i=1,2,\dots, N$.
+
+
+When $f(z_{i}, z_{j})=\textrm{I}(z_{i}=z_{j})$
+model (\ref{eqn:genPotts}) becomes
+\begin{equation}
+p({\bf z})=C(\beta)^{-1}\exp\left\{\sum_{i=1}^{N}\alpha_{i}(z_{i})+
+     \beta\sum_{i \sim j}\textrm{I}(z_{i}=z_{j})\right\}
+\label{eqn:Potts}
+\end{equation}
+For $k = 2$, this model is called the Ising
+model \citep{Ising:1925}; for $k > 2$ it is the \cite{Potts:1953}
+model.  The Ising model was originally proposed to describe the
+physical properties of magnets. Due to its flexibility and simplicity, 
+the Ising model
+and its various versions have been widely used in other fields,
+such as brain models in cognitive science \citep{Feng:2008}, 
+information and machine learning theory (\cite{MacKay:2003} and references therein), 
+economics (\cite{Bourgine/Nadal:2004} and references therein),
+sociology \citep{Kohring:1996} and game theory \citep{Hauert/Szabo:2005}.
+
+The most commonly used Potts model is the one without an external
+field and with $w_{ij} \equiv 1$,
+\begin{equation}
+p({\bf z})=C(\beta)^{-1}\exp\left\{\beta\sum_{i \sim j}\textrm{I}(z_{i}=z_{j})\right\}
+\label{eqn:simPotts}
+\end{equation}
+We refer to this as the \emph{simple Potts model}.
+
+Let $\alpha_{i}(z_{i}) \equiv 0$ and $f(z_{i},z_{j}) =
+w_{ij}\textrm{I}(z_{i}=z_{j})$. Then (\ref{eqn:genPotts})
+reduces to
+\begin{equation}
+  p({\bf{z}}) = C(\beta)^{-1}
+    \exp\left\{ \beta\sum_{i \sim j}w_{ij}\textrm{I}(z_{i}=z_{j})\right\}
+\label{eqn:comPotts}
+\end{equation}
+where $w_{ij}$ is the weight between vertex $i$ and $j$. For example
+we might take $w_{ij} = \frac{1}{d(z_{i}, z_{j})}$ where $d(z_{i},
+z_{j})$ is a distance function, say Euclidean distance, between two
+vertices.  This model is referred to
+as the \emph{compound Potts model}.
+
+In model (\ref{eqn:genPotts}), let $\alpha_{i}(z_{i})=0$ and define
+$f(z_{i},z_{j})$ as
+\begin{equation}
+ f(z_{i},z_{j})=
+  \begin{cases}
+    a_{1} & \textrm{if} \hspace{0.2cm} z_{i} = z_{j}\\
+    a_{2} & \textrm{if} \hspace{0.2cm} |z_{i}-z_{j}|=1\\
+    a_{3} & \textrm{otherwise}
+  \end{cases}
+\label{eqn:rep1}
+\end{equation}
+where $a_{1} \geq a_{2} \geq a_{3}$.  
+We call this model the \emph{repulsion Potts model}.   
+This model assumes an ordering of the colors and that neighboring
+vertices are most likely of the same color, and
+if they are different then it is more likely that they 
+are similar than totally different. See  \cite{Feng:2008} for more details.  
+
+
+\section{Simulation of the Potts Models}
+It is very hard to find algorithms
+(such as inversion of CDF, rejection sampling, adaptive rejection sampling, or
+ratio-of-uniforms sampling)
+to generate i.i.d. samples from the Potts models, and Markov chain methods
+have to be used for the simulation.
+
+To generate samples from model (\ref{eqn:genPotts}),
+single site updating, for example Gibbs sampling,
+is easy but may mix slowly. The \cite{Swendsen/Wang} algorithm (SW)
+is widely used to generate random samples from the simple Potts model.
+Wolff's algorithm \citep{Wolff:1989} has been advocated as an alternative
+to the SW.
+A Gibbs sampler that takes advantage of the
+conditional independence structure
+to update variables $z_{i}, i=1,2,\ldots, N$, could
+make the simulation much faster than a single site updating scheme \citep{Feng:2008}.  
+When there is external field, the partial decoupling
+method might outperform the Gibbs sampling.
+
+\subsection{Swendsen-Wang Algorithm}
+\label{sec:231}
+The SW algorithm was originally proposed for the simulation of the simple
+Potts model.  Drawing auxiliary variables $u_{ij}|{\bf{z}}$ for neighboring vertices $(i,
+j)$ from independent and uniform distributions on
+$[0,\exp\{\beta\textrm{I}(z_{i}=z_{j})\}]$ makes the joint density
+\begin{equation}
+ p({\bf{z}}, {\bf{u}}) \propto \prod_{i \sim j}
+                 \textrm{I}_{[0,\exp\{\beta\textrm{I}(z_{i}=z_{j})\}]}(u_{ij})
+\end{equation}
+The conditional distribution of ${\bf{z}}$ given ${\bf{u}}$ is also
+uniform on possible configurations. If $u_{ij} \geq 1$, then there is a
+bond between vertices i and j (when $u_{ij} \geq 1$ definitely
+$z_{i}=z_{j}$); otherwise there is no further constraint. Therefore,
+all vertices can be divided into patches (clusters). A patch is a
+collection of vertices, in which any two vertices are connected by a
+bond or a sequence of bonds. There is no bond between vertices from
+different patches. See Figure \ref{fig:patches} for illustrations. The
+vertices within each patch should belong to the same category and the
+categories of different patches are i.i.d. from the discrete uniform
+distribution among all possible categories.
+
+\begin{figure}% [htp]
+ \centering
+ \includegraphics[width=0.6\textwidth, totalheight=0.2\textheight]{Graph-patches.png}
+ \caption{Illustration of the concept of patches.}
+ \label{fig:patches}
+\end{figure}
+
+The SW algorithm is the seminal work on algorithms using auxiliary
+variables (in this case ${\bf u}$) in this area.
+A slightly generalized version of the original SW algorithm
+can be used to generate samples from a compound Potts model \citep{Feng:2008}.
+Given all vertices, there are three steps in each iteration as follows.
+\begin{enumerate}
+\item Build bonds among vertices in neighbor with probability
+\[1-exp(-\beta w_{ij}\textrm{I}(z_{i}=z_{j}))\]
+\item Build patches for vertices bonded together
+\item Flip the patches randomly to any color
+\end{enumerate}
+The SW algorithm may outperform single-site updating samplers,
+especially when there is no
+external field and there is patchiness among vertices, in which
+simultaneous switching of clusters is necessary.
+For more details see \cite{Feng:2008}.
+
+\subsection{Wolff's Algorithm}
+\label{sec:232}
+A modification of the Swendsen-Wang algorithm was proposed
+by \cite{Wolff:1989}.  The difference between the Wolff and the SW is that
+instead of flipping all patches randomly, one patch is chosen and all
+vertices in that patch are flipped to their opposites in the simple Potts
+model. To be more specific, for Wolff's algorithm, a vertex, say $v$, is
+selected randomly among all vertices, and bonds between $v$ and its
+neighbors are set the same way as in the SW. If there are bonds between $v$
+and its neighbors, say $C_{v}$, then the bonds between vertices in
+$C_{v}$ and their neighbors are set. Follow the same procedure
+recursively until no new bonds are created.  Now there is a patch
+around $v$ and all vertices in this patch are flipped to their
+opposites.  Note, there is no randomness involved when flipping vertices
+for the Ising Model.  Although Wolff's algorithm is similar to the SW, its
+proof is formalized from another perspective where detailed balance
+and irreducibility are verified (see \cite{Wolff:1989} for details).
+
+To generate samples from a compound Potts model, a slighted generalized
+version of the original Wolff algorithm as follows can be adopted.
+There are four steps in each iteration.
+\begin{enumerate}
+\item Randomly select a vertex
+\item Build a patch around it with probability 
+\[1-exp(-\beta w_{ij}\textrm{I}(z_{i}=z_{j}))\]
+\item Continue building the patch till no additional vertex can be
+bonded together
+\item Flip the patch randomly to another color
+\end{enumerate}
+See \cite{Feng:2008} for more details.
+
+
+
+\subsection{A  Gibbs Sampler Using
+Conditional Independence}
+\label{subsec:Gibbs}
+Various multiple-site sampling methods might outperform
+single-site updating, but sometimes they might not.
+Multi-site sampling methods like the SW algorithm
+could tackle the critical slowing down
+problem.
+When there is no external field, from the results pointed out
+in \cite{Higdon:1998},  the SW algorithm
+outperforms single-site Metropolis updating when $\beta$ is at the
+critical value.  When there is an external field
+(a likelihood function in Bayesian inference for example),
+the SW slows down since it does not make good use of the data.
+ \cite{Hurn:1997} and \cite{Smith/Smith} suggested that
+when $\beta$ is large, Gibbs samplers might be more effective.
+The choice of the best sampling method
+is likely to be problem-specific and there is no
+clear-cut winner as pointed out in
+\cite{Hurn:1997} and \cite{Higdon:1998}.
+Furthermore, the previous studies just focus on relatively small grids in two
+dimensions with the number of categories equal to 2. What the
+convergence properties of various algorithms are
+on a three dimensional large grid with more than 2 categories,
+the case in MRI analysis for example \citep{Feng:2008},
+needs further study.
+Given that, a Gibbs sampler might be a good choice under certain circumstances.
+The package provides functions that uses the Gibbs sampler taking
+advantage of the conditional independence structure
+to update colors of vertices. It could make the simulation much faster
+than a one-site-after-another sampling scheme by using the vectorization
+functions in $\mathbf{R}$.
+
+The idea is that if we can divide variables that need to be updated into
+different blocks and given the variables in other blocks, all the variables
+within the same block are conditionally independent, then we can update
+all blocks iteratively with the variables within the same block
+being updated simultaneously.
+In Figure (a) of \ref{fig:checkerboard},
+under the four neighbor structure in 2D,
+given the black vertices, the whites are independent and vice versa.  By
+this kind of independence, updating can be done in two
+steps: one for the blacks, one for the whites. The idea of taking advantage of
+this kind of independence can be traced back at least to the ``Coding
+Methods'' in \cite{Besag:1974}. It was described in \cite{Wilkinson:2005} 
+and  detailed discussion can be found in \cite{Winkler:2003}.    
+This conditional independence can be
+generalized to 3D lattices with a six neighbor structure,
+see (b) of Figure \ref{fig:checkerboard} for illustration.  Under
+six neighbor structure, given the blacks, the whites are independent and
+vice versa.  The minimum
+number of blocks to make the vertices within each block independent
+given the other blocks is called the \textit{chromatic number} in
+\cite{Winkler:2003}.  So the chromatic numbers for four neighbor
+configuration in 2D and six neighbor in 3D are both 2.
+
+\begin{figure}[htp]
+  \centering
+  \subfigure[2D]{
+    \includegraphics[width=0.38\textwidth, totalheight=0.3\textheight]
+    {chessboard.png}}
+  \vspace{.3in}
+  \subfigure[3D]{
+    \includegraphics[width=0.38\textwidth,totalheight=0.3\textheight]
+    {chessboard-3d-2.png}}
+  \caption{Illustration of Conditional Independence}
+  \label{fig:checkerboard}
+\end{figure}
+
+The extension to the eight neighbor configuration in 2D and eighteen and
+twenty-six neighbor in 3D is as follows.
+Under the eight neighbor structure in 2D, the chromatic number is four;
+under the eighteen neighbor configuration in 3D, the chromatic number is seven;
+under the twenty-six neighbor configuration in 3D, the chromatic number is eight.
+For more details, see \cite{Feng:2008}.
+
+The function to split vertices into conditional independent blocks is
+\texttt{getBlocks()}.  Right now, for a 2D graph, the vertices can be divided
+into either 2 or 4 blocks, and for a 3D graph either 2 or 8.
+The functions using the Gibbs sampler that takes advantage of
+conditional independence are \texttt{BlocksGibbs()} and 
+\texttt{rPotts1()}.  The difference between the two is that the first one can only 
+generate samples from a Potts model without the external field while the second is 
+good for all Potts models.
+The relationship among neighboring vertices can be defined by specifying the
+parameter \texttt{spatialMat}.   
+
+\subsection{The Partial Decoupling Method}
+Besides the Gibbs sampling, another way to obtain samples from a 
+Potts model with external field is to use the partial decoupling
+method through the function \texttt{rPotts1()}.
+
+The partial decoupling method was originally developed by
+\cite{Higdon:1993} for an Ising model with an external field. Given
+the external field, the symmetry property is violated.  Instead of
+drawing $u_{ij}|{\bf z}$ for neighbor points $(i, j)$ from independent
+uniform distributions on $[0,\exp\{\beta\textrm{I}(z_{i}=z_{j})\}]$,
+draw $u_{ij}|{\bf z}$ from the uniform distribution
+$[0,\exp\{\delta_{ij}\beta\textrm{I}(z_{i}=z_{j})\}]$.  Now, the
+bonding probability is not only controlled by $\beta$ alone, but
+$\delta_{ij}$ as well.  When $\delta_{ij} = 0$, it reduces to single
+site updating; when $\delta_{ij} = 1$, it corresponds to the SW
+algorithm. The smaller the $\delta_{ij}$, the less likely bonds are
+formed. After setting the bonds, clusters are usually not independent
+anymore and Gibbs, Metropolis-Hastings, or even partial decoupling
+could be used to update the coarser model.  The Gibbs sampling is
+used in the package.
+
+The goal of choosing
+$\delta_{ij}$ is to improve the mixing when sampling from ${\bf z}|{\bf u}$.
+Strategies for the determination of $\{\delta_{ij}\}$ are based on the
+nature of the likelihood function of the data. 
+For example, choosing $\delta_{ij}=0$
+for vertices on the boundaries of adjacent sub-graphs 
+and $\delta_{ij}=1$ for others can prevent the clusters from
+growing beyond certain limits. Another choice is $\delta_{ij} =
+a\textrm{I}\{y_{i}=y_{j}\}$ with $0 < a <1$, where $y_i$ and $y_j$ are
+observations for vertex $i$ and $j$.  The details of the partial
+decoupling method can be found in \cite{Higdon:1998} and
+\cite{Hurn:1997}. 
+
+\section{Calculation of the Normalizing Constant}
+The normalizing constant is not critical and can be ignored
+if $\beta$ is known.  However,
+if $\beta$ is treated as unknown, for example in studies using the Bayesian 
+methods \citep{Green/Richardson:2002,Smith/Smith},
+then the normalizing constant is necessary when drawing samples from the
+conditional distribution of $\beta$ by a Metropolis-Hastings
+algorithm.
+
+The package provide a function \texttt{getNC()} to obtain
+the normalizing constant of a simple Potts model.
+The method adopted is similar to that in \cite{Green/Richardson:2002} and
+\cite{Smith/Smith}, in which the thermodynamic integration approach was
+used.
+The thermodynamic integration approach comes from
+the differential equations for describing thermodynamic relationships
+in physics.
+Basically, the thermodynamic integration method uses the
+fact that the normalizing constant can be obtained by solving the
+differential equation
+\[
+	\frac{\partial}{\partial \beta}\log(C(\beta))=E(U({\bf z})|\beta, k)
+\]
+where $U({\bf z}) = \sum_{i \sim j}\textrm{I}(z_{i}=z_{j})$ and $k$ is the
+number of categories.  Since
+\[
+        \log{C(0)}=N\log{k}
+\]
+it follows
+\begin{equation}
+   \log{C(\beta)} =  N\log{k} + \int_{0}^{\beta}E(U({\bf z})|\beta^{'}, k)d\beta^{'}
+\label{eqn:NC}
+\end{equation}
+
+In order to compute $\log{C(\beta)}$ we use the following steps:
+\begin{enumerate}
+\item Take $k$ grid values $\{0 < \beta_{1} < \beta_{2}<\ldots<\beta_{k}\leq \beta\}$.
+      For each $\beta_{i}, i=1,2,\ldots, k$, obtain $n$ simulations of the graph
+      and estimate $E(U({\bf z})|\beta_{i},k)$ by the average of the functions
+      $U({\bf z})$ from $n$ simulations.
+      Possible methods for simulation include Gibbs sampling with single site
+      updating, or the SW, or the Wolff algorithms discussed previously.
+\item Compute the integral by numerical integration.
+\end{enumerate}
+
+
+\section{Computational Issues}
+As mentioned in sub-section \ref{subsec:Gibbs},
+it is beneficial to use vectorization functions in $\mathbf{R}$ to fulfill
+the idea of conditional independence.
+Furthermore, for the SW algorithm
+the major computational work is the identification
+and labeling of the patches of connected vertices. This is an instance
+of a connected component labeling problem for an undirected graph.  We
+use Rem's algorithm \citep{Dijkstra:1976} to fulfill the task in the function
+\texttt{getPatches()}.  Besides facilitating the SW algorithm, 
+it can be used in other clustering methods as well. See \cite{Heller:2006} 
+for example.
+
+
+\section{Future Work}
+In the future, the package might be upgraded in several directions. First
+we might incorporate more available sampling methods for the Potts
+models.  Second, the speed of current functions might be enhanced by
+using embedded $\mathbf{C}$ functions and parallel computations.  
+Third, changes based on feedback of users.
+
+
+\bibliographystyle{plainnat}
+\bibliography{Intro}
+\end{document}

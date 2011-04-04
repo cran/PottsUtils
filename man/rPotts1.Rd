@@ -2,7 +2,7 @@
 \alias{rPotts1}
 \title{Generate One Random Sample from a Potts Model}
 \description{
-  Generate a random sample from a Potts model with external field
+  Generate one random sample from a Potts model with external field
   by Gibbs Sampling that takes advantage of conditional independence,
   or the partial decoupling method.
 }
@@ -23,8 +23,8 @@
   \item{weights}{weights between neighbors or \eqn{\delta_{ij}}s
 	in the partial decoupling method. When using Gibbs sampling,
 	there is one for each corresponding
-	neighbor in	\code{neighbors}. When using partial decoupling,
-	there is one for each corresponding	edge in	\code{edges}. The default values are 1s for all.}
+	component in \code{neighbors}. When using partial decoupling,
+	there is one for each corresponding component in \code{edges}. The default values are 1s for all.}
   \item{spatialMat}{a matrix that describes the relationship among
     vertices in neighbor. It is not required when using the partial decoupling method. The default value is \code{NULL} corresponding
 	to the simple or compound Potts model.}
@@ -45,7 +45,7 @@
   This function generates random samples from a 
   Potts model as follows:
   \deqn{
-  p(z)=C(\beta)^{-1} \exp\{\sum_i \alpha_i(z_i) \beta \sum_{i \sim j} w_{ij} f(z_{i},z_{j})\}
+  p({\bf z})=C(\beta)^{-1} \exp\{\sum_i \alpha_i(z_i) + \beta \sum_{i \sim j} w_{ij} f(z_{i},z_{j})\}
   }
 
   where \eqn{C(\beta)} is a normalizing constant
@@ -53,11 +53,10 @@
   indicates neighboring vertices.  The parameter \eqn{\beta} is called the
   "inverse temperature", which determines the level of spatial homogeneity between
   neighboring vertices in the graph. We assume \eqn{\beta > 0}.
-  The set \eqn{z_{1}, z_{2},
-    \ldots,} comprises the indices to the colors of all vertices. Function
+  The set \eqn{{\bf z}=\{z_{1}, z_{2},\ldots,\}} comprises the indices to the colors of all vertices. Function
   \eqn{f(z_{i}, z_{j})} determines the relationship among vertices
   in neighbor. Parameter \eqn{w_{ij}} is the weight between vertex
-  \eqn{i} and \eqn{j}. And \eqn{\sum_i \alpha_i(z_i)} is called the "external field".
+  \eqn{i} and \eqn{j}. The term \eqn{\sum_i \alpha_i(z_i)} is called the "external field".
 
   For the simple, the compound, and the simple repulsion Potts
   models,
@@ -67,11 +66,10 @@
   Parameters \eqn{w_{ij}} are all equal for the simple Potts model but
   not so for the compound model.
   
-  For the repulsion Potts model \eqn{f(z_{i}, z_{j}) = a_{1}}, if
-  \eqn{z_{i} = z_{j}}; \eqn{f(z_{i}, z_{j}) = a_{2}}, if
-  \eqn{|z_{i} - z_{j}|=1};  \eqn{f(z_{i}, z_{j}) = a_{3}} otherwise.
-  
-  
+  For the repulsion Potts model \eqn{f(z_i , z_j) =	\beta_1} if \eqn{z_i
+	= z_j};	\eqn{f(z_i , z_j) = \beta_2} if \eqn{|z_i - z_j| = 1};
+	\eqn{f(z_i , z_j) = \beta_3} otherwise.
+
   The argument \code{spatialMat} is used to specify the
   relationship among vertices in neighbor. The default value is
   \code{NULL}
@@ -91,8 +89,6 @@
   Other relationships among neighboring vertices can be specified through
   it as well.
 
-  The argument \code{external} gives the values of external field.
-   
   Gibbs sampling can be used to generate samples from all
   kinds of Potts models. We use the method that takes advantage of
   conditional independence to speed up the simulation. See

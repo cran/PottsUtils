@@ -2,8 +2,7 @@
 \alias{getNeighbors}
 \title{Get Neighbors of All Vertices of a Graph}
 \description{
-  Obtain neighbors of vertices of a 1D, 2D, or 3D graph
-  based on the definition of neighbors.
+  Obtain neighbors of vertices of a 1D, 2D, or 3D graph.
 }
 \usage{
    getNeighbors(mask, neiStruc)
@@ -11,7 +10,7 @@
 \arguments{
   \item{mask}{a vector, matrix, or 3D array specifying vertices within a
     graph. Vertices of value 1 are within the graph and 0 are not.}
-  \item{neiStruc}{a scalar, vector of four components, or 3*4 matrix
+  \item{neiStruc}{a scalar, vector of four components, or \eqn{3\times4} matrix
     corresponding to 1D, 2D, or 3D graphs. It gives the definition of
     neighbors of a graph.
     All components of \code{neiStruc} should be positive (\eqn{\ge 0})
@@ -89,7 +88,7 @@
   mask <- matrix(1, nrow=2, ncol=3)
   getNeighbors(mask, neiStruc=c(2,2,2,2))
 
-  #Example 3: get all neighbors of a cube based on 6 neighbors structure
+  #Example 3: get all neighbors of a 3D graph based on 6 neighbors structure
   #           where the neighbors of a vertex comprise its available
   #           N,S,E,W, upper and lower adjacencies. To achieve it, there
   #           are several ways, including the two below.
@@ -106,7 +105,7 @@
   n2 <- apply(n2, 1, sort)
   all(n1==n2)
 
-  #Example 4: get all neighbors of a cube based on 18 neighbors structure
+  #Example 4: get all neighbors of a 3D graph based on 18 neighbors structure
   #           where the neighbors of a vertex comprise its available
   #           adjacencies sharing the same edges or faces.
   #           To achieve it, there are several ways, including the one below.

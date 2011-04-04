@@ -2,7 +2,7 @@
 \alias{getWeights}
 \title{Get All Weights of a Graph}
 \description{
-  Obtain weights of edges of vertices of a 1D, 2D, or 3D graph based on the
+  Obtain weights of edges of a 1D, 2D, or 3D graph based on the
   neighborhood structure.
 }
 \usage{
@@ -12,7 +12,7 @@
   \item{mask}{a vector, matrix, or 3D array specifying vertices within a
     graph. Vertices of value 1 are within the graph and 0 are not.}
   \item{neiStruc}{a scalar, vector of four components,
-	or 3*4 matrix corresponding to 1D, 2D, or 3D graphs.
+	or \eqn{3\times4} matrix corresponding to 1D, 2D, or 3D graphs.
 	It specifies the neighborhood structure.
 	See \code{getNeighbors} for details.}
   \item{format}{If it is 1, then the output is a vector of weights,
@@ -43,7 +43,7 @@
   mask <- matrix(1 ,nrow=3, ncol=3)
   getWeights(mask, neiStruc=c(2,2,2,2), format=2)
 
-  #Example 3: get all weights of a cube based on 6 neighbors structure
+  #Example 3: get all weights of a 3D graph based on 6 neighbors structure
   #           where the neighbors of a vertex comprise its available
   #           N,S,E,W, upper and lower adjacencies. 
   mask <- array(1, dim=rep(3,3))

@@ -9,15 +9,15 @@
 }
 \arguments{
   \item{n}{number of samples.}
-  \item{nvertex}{number of vertices in a graph.}
+  \item{nvertex}{number of vertices of a graph.}
   \item{ncolor}{number of colors each vertex can take.}
-  \item{edges}{edges in a graph.}
-  \item{weights}{weights of edges. One for each corresponding edge in
+  \item{edges}{edges of a graph.}
+  \item{weights}{weights of edges. One for each corresponding component in
 	\code{edges}. The default values are 1s for all.}
   \item{beta}{the parameter inverse temperature of the Potts model.}
 }
 \value{
-  The output is a \code{nvertex}*\code{n} matrix with
+  The output is a \code{nvertex} by \code{n} matrix with
   the kth column being the kth sample. 
 }
 \details{
@@ -42,8 +42,8 @@
   #Example 1: Generate 100 samples from a Potts model with the
   #           neighborhood structure corresponding to a
   #           second-order Markov random field defined on a 
-  #           \eqn{3 \times 3} 2D graph. The number of colors is 2.
-  #           \eqn{\beta}=0.1. All weights are equal to 1.
+  #           3*3 2D graph. The number of colors is 2.
+  #           beta=0.1. All weights are equal to 1.
  
   edges <- getEdges(mask=matrix(1, 3, 3), neiStruc=rep(2,4))
   SW(n=100, nvertex=9, ncolor=2, edges, beta=0.1)

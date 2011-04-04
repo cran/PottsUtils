@@ -11,7 +11,8 @@
 \arguments{
   \item{mask}{a vector, matrix, or 3D array specifying vertices of a
     graph. Vertices of value 1 are within the graph and 0 are not.}
-  \item{neiStruc}{a scalar, vector of four components, or 3*4 matrix
+  \item{neiStruc}{a scalar, vector of four components, or
+	\eqn{3\times4}	matrix
     corresponding to 1D, 2D, or 3D graphs. It specifies the neighborhood
 	structure. See \code{getNeighbors} for details.
     }
