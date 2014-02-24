@@ -79,6 +79,26 @@ get2NeighborsCube <- function(mask, n, nr, nc, neiStruc){
     neighbors
 }
 
+get2NeighborsCube3DDiad <- function(mask){
+    expand <- matrix(c(-1, -1, -1,
+                       -1, +1, +1,
+                       -1, +1, -1,
+                       -1, -1, +1,
+                       +1, -1, -1,
+                       +1, +1, +1,
+                       +1, +1, -1,
+                       +1, -1, +1), ncol=8)
+    browser()
+    n <- sum(mask)
+    maskn <- array(cumsum(mask), dim=dim(mask))
+    maskn[mask==0] <- n + 1
+    focus <- which(mask==1, arr.ind=TRUE)
+    focus <- t(focus)
+    neighbors <- do.call(cbind, lapply(1:8, function(i)
+                         maskn[t(focus + expand[,i])])) 
+    
+}
+
 getNeighborsB <- function(neiStruc, neighbors2){
     nvertex <- nrow(neighbors2)
     neighbors <- matrix(nvertex+1, nrow=nvertex+1, ncol=neiStruc)

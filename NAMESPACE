@@ -1,6 +1,6 @@
 useDynLib(PottsUtils)
 
 export(getConfs, getEdges, getWeights, getNeighbors, getBlocks, getPatches,
-       rMultinom, SW, Wolff, BlocksGibbs, rPotts1, getNC)
+       SW, Wolff, BlocksGibbs, rPotts1, getNC)
 
-
+importFrom("miscF", rMultinom)

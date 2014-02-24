@@ -58,6 +58,7 @@
   \code{\link[PottsUtils]{Wolff}}
 }
 \examples{
+  \dontrun{
   #Example 1: Calculate the normalizing constant of a simple Potts model
   #           with the neighborhood structure corresponding to a
   #           first-order Markov random field defined on a
@@ -69,6 +70,7 @@
   edges <- getEdges(mask=matrix(1,3,3), neiStruc=c(2,2,0,0))
   getNC(beta=2, subbetas=seq(0,2,by=0.2), nvertex=3*3, ncolor=2,
         edges, algorithm="S", n=10000, burn=1000)
+  }
 
 }
 \keyword{distribution}

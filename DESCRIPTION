@@ -1,13 +1,13 @@
 Package: PottsUtils
 Title: Utility Functions of the Potts Models
-Version: 0.2-2
-Author: Dai Feng
-Description: A package including several functions related to the Potts
-        models.
+Version: 0.2-3
+Author: Dai Feng [aut, cre], Luke Tierney [ctb]
+Description: A package including several functions related to the Potts models.
 Maintainer: Dai Feng <daifeng.stat@gmail.com>
-Acknowledgment: I am grateful to Dr. Luke Tierney for valuable advice.
-Depends: R (>= 2.12.1)
+Depends: R (>= 3.0.2)
+Imports: miscF (>= 0.1-2)
 License: GPL-2
-Packaged: 2011-04-04 20:13:16 UTC; dafeng
+Packaged: 2014-02-24 20:16:31 UTC; fengd
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2011-04-05 07:14:29
+Date/Publication: 2014-02-24 22:53:56
