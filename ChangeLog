@@ -1,3 +1,10 @@
+2014-6-10
+	Implement the SW algorithm by embedded C entirely.
+	* src: add sw.c and merger getPatches.c into it.
+	* R/getPatches.R: changed accordingly.
+	* R/SW.R: changed accordingly.
+	* DESCRIPTION: Change the version to 0.3-0.
+	
 2014-2-20
 	* move introduction from /inst/doc to /vignettes.
 	

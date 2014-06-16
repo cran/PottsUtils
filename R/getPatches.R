@@ -1,4 +1,5 @@
 getPatches <- function(bonds, nvertex){
+    
     if(is.matrix(bonds) && ncol(bonds) == 2){
         a <- bonds[,1] - 1
         b <- bonds[,2] - 1
@@ -16,7 +17,9 @@ getPatches <- function(bonds, nvertex){
 
     a <- as.integer(a)
     b <- as.integer(b)
-    connect <- .Call("getPatches", a, b, nbond, nvertex)
-    split(1:nvertex, connect+1)
+    patches <- .Call("getPatches", a, b, nbond, nvertex)
+    
+    lapply(1:length(patches), function(i) patches[[i]]+1)
+    
 }
 
