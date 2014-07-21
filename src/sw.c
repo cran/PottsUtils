@@ -86,15 +86,19 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 	
 	int i, j;
 
+	int *bondsPick = (int *) R_alloc(nedge, sizeof(int));
+
 	SEXP scolors = PROTECT(allocMatrix(INTSXP, nvert, niter));
 	int *colors = INTEGER(scolors);
-	
+
+	SEXP snbond = PROTECT(allocVector(INTSXP, 1));
+	int *nbond = INTEGER(snbond);
+
 	GetRNGstate();
 	
 	for (i = 0; i < niter; i++) { 
 
-		int nbond = 0;
-		int *bondsPick = (int *) R_alloc(nedge, sizeof(int));
+		nbond[0] = 0;
 
 		/* build bonds */
 		for (j = 0; j < nedge; j++) {
@@ -103,7 +107,7 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				sunif = unif_rand();
 				if (sunif < bondProbs[j]){
 					bondsPick[j] = 1;
-					nbond = nbond + 1;
+					nbond[0] = nbond[0] + 1;
 				}
 				else{
 					bondsPick[j] = 0;
@@ -115,7 +119,7 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 			}
 		}
 		
-		if (nbond > 0){
+		if (nbond[0] > 0){
 			/* obtain patches */
 			SEXP sa = PROTECT(allocVector(INTSXP, nbond));
 			SEXP sb = PROTECT(allocVector(INTSXP, nbond));
@@ -130,14 +134,15 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				}
 			}
 			
-			SEXP snbond = PROTECT(allocVector(INTSXP, 1));
-			INTEGER(snbond)[0] = nbond;
-	
+			//SEXP snbond = PROTECT(allocVector(INTSXP, 1));
+			//INTEGER(snbond)[0] = nbond;
+
 			
 			SEXP patches = PROTECT(getPatches(sa, sb, snbond, snvert));
 			
 			/* obtain new colors of each patch */
-			int *newColors = (int *) R_alloc(LENGTH(patches), sizeof(int));
+			//int *newColors = (int *) Calloc(LENGTH(patches), sizeof(int));
+			int *newColors = Calloc(LENGTH(patches), int);
 			double crand; 
 			for( j = 0; j < LENGTH(patches); j++){
 				crand = rand() % ncolor;
@@ -153,10 +158,12 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				}
 			}
 		
-			UNPROTECT(4);
+			Free(newColors);
+			UNPROTECT(3);
 		}
 		else{
-			int *newColors = (int *) R_alloc(nvert, sizeof(int));
+			//int *newColors = (int *) Calloc(nvert, sizeof(int));
+			int *newColors = Calloc(nvert, int);
 			double crand; 
 			for( j = 0; j < nvert; j++){
 				crand = rand() % ncolor;
@@ -167,12 +174,13 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				oneIteration[j] = newColors[j];
 				colors[j + i*nvert] = newColors[j];
 			}
+			Free(newColors);
 		}
 	}
 
 	PutRNGstate();
 	
-	UNPROTECT(1);
+	UNPROTECT(2);
 
 	return scolors;
 }
