@@ -1,5 +1,5 @@
 72bb34708b15b52163682ee9fae756de *ChangeLog
-c00a480f968cc971299efff62ebdb06c *DESCRIPTION
+8c76cd6a7e2dc9b1e3096ba4c331b8a3 *DESCRIPTION
 836d7c07f9d391859619c8f02ca352b6 *INDEX
 0b19870a002a835adc8097f7ebe4f721 *NAMESPACE
 2db53adcc0413768dbe4483c00fd2692 *R/BlocksGibbs.R
@@ -27,7 +27,7 @@ a4d6fb8de795195f7ef8348560fce4fb *man/getNeighbors.Rd
 82f98318534e16dd5fe415865dc4e077 *man/getPatches.Rd
 689cb82c8c73cf04368bf13608549679 *man/getWeights.Rd
 47d29148f46e0eb9fd7d3b70827a44ac *man/rPotts1.Rd
-7323a09d7561b47745968399a0d6a26f *src/sw.c
+89075f50c3878f71abe7894c2f95ca23 *src/sw.c
 4b96e32487d1dafca9f56f9e847c6464 *vignettes/Intro.Rnw
 1e5ce30a00cdbf3e07f136e5f837e276 *vignettes/Intro.bib
 d5c0748df3eaadc703359c87994ef9ef *vignettes/figures/18neighbors.png

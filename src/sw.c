@@ -121,8 +121,8 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 		
 		if (nbond[0] > 0){
 			/* obtain patches */
-			SEXP sa = PROTECT(allocVector(INTSXP, nbond));
-			SEXP sb = PROTECT(allocVector(INTSXP, nbond));
+			SEXP sa = PROTECT(allocVector(INTSXP, nbond[0]));
+			SEXP sb = PROTECT(allocVector(INTSXP, nbond[0]));
 			int *a = INTEGER(sa);
 			int *b = INTEGER(sb);
 			int k = 0;
@@ -134,9 +134,6 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				}
 			}
 			
-			//SEXP snbond = PROTECT(allocVector(INTSXP, 1));
-			//INTEGER(snbond)[0] = nbond;
-
 			
 			SEXP patches = PROTECT(getPatches(sa, sb, snbond, snvert));
 			
@@ -146,7 +143,7 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 			double crand; 
 			for( j = 0; j < LENGTH(patches); j++){
 				crand = rand() % ncolor;
-				newColors[j] = crand; 
+				newColors[j] = (int) crand; 
 			}
 			/* assign new colors to each patch */
 			for (j = 0; j < LENGTH(patches); j++) {
@@ -167,7 +164,7 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 			double crand; 
 			for( j = 0; j < nvert; j++){
 				crand = rand() % ncolor;
-				newColors[j] = crand;
+				newColors[j] = (int) crand;
 			}
 		
 			for (j = 0; j < nvert; j++) {
