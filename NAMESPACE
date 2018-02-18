@@ -1,6 +1,7 @@
-useDynLib(PottsUtils)
+useDynLib(PottsUtils, .registration = TRUE)
 
 export(getConfs, getEdges, getWeights, getNeighbors, getBlocks, getPatches,
        SW, Wolff, BlocksGibbs, rPotts1, getNC)
 
 importFrom("miscF", rMultinom)
+importFrom("stats", runif)

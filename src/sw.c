@@ -142,7 +142,8 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 			int *newColors = Calloc(LENGTH(patches), int);
 			double crand; 
 			for( j = 0; j < LENGTH(patches); j++){
-				crand = rand() % ncolor;
+			        double rr=30000*unif_rand();
+				crand = (int) rr % ncolor;
 				newColors[j] = (int) crand; 
 			}
 			/* assign new colors to each patch */
@@ -163,7 +164,8 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 			int *newColors = Calloc(nvert, int);
 			double crand; 
 			for( j = 0; j < nvert; j++){
-				crand = rand() % ncolor;
+			        double rr=30000*unif_rand();
+				crand = (int) rr % ncolor;
 				newColors[j] = (int) crand;
 			}
 		

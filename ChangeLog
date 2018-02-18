@@ -1,3 +1,7 @@
+2018-2-14
+	* DESCRIPTION: Change the version to 0.3-3. Now imports miscF (>= 0.1-4).
+	* src/sw.c: Use random numerber generation provided by R instead of C.
+	
 2014-7-21
 	* src: a better memory management.
 	* DESCRIPTION: Change the version to 0.3-1.
@@ -15,7 +19,6 @@
 	
 2013-1-03 
 	* move the function rMultinom() to package 'miscF'.
-
 	* DESCRIPTION: Change the version to 0.2-3; add 'miscF' to Depends; 
 	change the email address.
 
