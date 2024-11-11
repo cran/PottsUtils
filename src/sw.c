@@ -138,8 +138,8 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 			SEXP patches = PROTECT(getPatches(sa, sb, snbond, snvert));
 			
 			/* obtain new colors of each patch */
-			//int *newColors = (int *) Calloc(LENGTH(patches), sizeof(int));
-			int *newColors = Calloc(LENGTH(patches), int);
+			//int *newColors = (int *) R_Calloc(LENGTH(patches), sizeof(int));
+			int *newColors = R_Calloc(LENGTH(patches), int);
 			double crand; 
 			for( j = 0; j < LENGTH(patches); j++){
 			        double rr=30000*unif_rand();
@@ -156,12 +156,12 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				}
 			}
 		
-			Free(newColors);
+			R_Free(newColors);
 			UNPROTECT(3);
 		}
 		else{
-			//int *newColors = (int *) Calloc(nvert, sizeof(int));
-			int *newColors = Calloc(nvert, int);
+			//int *newColors = (int *) R_Calloc(nvert, sizeof(int));
+			int *newColors = R_Calloc(nvert, int);
 			double crand; 
 			for( j = 0; j < nvert; j++){
 			        double rr=30000*unif_rand();
@@ -173,7 +173,7 @@ SEXP sw(SEXP sbondProbs, SEXP soneIteration, SEXP sedges, SEXP snedge,
 				oneIteration[j] = newColors[j];
 				colors[j + i*nvert] = newColors[j];
 			}
-			Free(newColors);
+			R_Free(newColors);
 		}
 	}
 

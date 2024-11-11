@@ -1,5 +1,5 @@
 d0e09639f0a6e35d688a47357007ccce *ChangeLog
-c9bf3a70736d7fff96dfb1e8dab7bbe9 *DESCRIPTION
+9e68f2d8902e861b961aa26877abd0a0 *DESCRIPTION
 836d7c07f9d391859619c8f02ca352b6 *INDEX
 4d7ed3297a61746423ba9b8155d39cb9 *NAMESPACE
 2db53adcc0413768dbe4483c00fd2692 *R/BlocksGibbs.R
@@ -13,9 +13,9 @@ f914613d01bcb7d5f3f15ccfdb295dcf *R/getEdges.R
 c4a13e508bb2e9765173cafc4427e5d9 *R/getPatches.R
 dadbf74297e26c527f69123a6b2ea9d3 *R/getWeights.R
 814bd8c0bcea2fbd36ad7e9d3befb8a7 *R/rPotts1.R
-cb8eae0638bd0178b33a6a16cd6b14f3 *build/vignette.rds
+4fb02fde8b773ef1092d2292bb2312f9 *build/vignette.rds
 4b96e32487d1dafca9f56f9e847c6464 *inst/doc/Intro.Rnw
-8960157b6e82981280c3e901c3ecd1dc *inst/doc/Intro.pdf
+b6095232d3a279bc8f2d093df5ab1a3f *inst/doc/Intro.pdf
 c670158142af4b60e7d87eb3579f7aec *man/BlocksGibbs.Rd
 58afb42b064c41ea796360cb7427ad23 *man/SW.Rd
 ace47d0a5f3a76a6d89e712db58d3dcf *man/Wolff.Rd
@@ -28,7 +28,7 @@ a4d6fb8de795195f7ef8348560fce4fb *man/getNeighbors.Rd
 689cb82c8c73cf04368bf13608549679 *man/getWeights.Rd
 47d29148f46e0eb9fd7d3b70827a44ac *man/rPotts1.Rd
 7c22b1b500cab25872924e218f1645f5 *src/registerDynamicSymbol.c
-8a753eb5288a3ef344d85755bd7b4c31 *src/sw.c
+15c63f682069d4b0f93f77df60906751 *src/sw.c
 4b96e32487d1dafca9f56f9e847c6464 *vignettes/Intro.Rnw
 1e5ce30a00cdbf3e07f136e5f837e276 *vignettes/Intro.bib
 d5c0748df3eaadc703359c87994ef9ef *vignettes/figures/18neighbors.png
